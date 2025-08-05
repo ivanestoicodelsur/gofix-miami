@@ -1,8 +1,487 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Technical Ivan Romero - Contacto Profesional</title>
-    <!-- Resto del contenido del archivo HTML -->
-[El contenido completo del archivo HTML se copiará aquí]
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #121212;
+            --accent: #FFD700;
+            --secondary: #4CAF50;
+            --light: #FFFFFF;
+            --dark: #121212;
+            --gray: #F5F5F5;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--accent);
+            margin: 0 auto 20px;
+            background: linear-gradient(45deg, #2c3e50, #4ca1af);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--light);
+        }
+
+        .profile-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .profile-header h2 {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .divider {
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
+            margin: 30px 0;
+            border: none;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .contact-card {
+            background: rgba(50, 50, 50, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+
+        .contact-card:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .contact-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+
+        .contact-info p {
+            color: #ddd;
+            word-break: break-all;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .social-card {
+            background: rgba(50, 50, 50, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+
+        .social-card:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .social-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .social-card h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--light);
+        }
+
+        .social-card p {
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #qrcode {
+            width: 180px;
+            height: 180px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .qr-text {
+            text-align: center;
+            max-width: 300px;
+            color: #ddd;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .contact-card, .social-card {
+            animation: fadeIn 0.8s ease-out;
+            animation-fill-mode: backwards;
+        }
+
+        .contact-card:nth-child(1) { animation-delay: 0.2s; }
+        .contact-card:nth-child(2) { animation-delay: 0.4s; }
+        .contact-card:nth-child(3) { animation-delay: 0.6s; }
+        .social-card:nth-child(1) { animation-delay: 0.2s; }
+        .social-card:nth-child(2) { animation-delay: 0.3s; }
+        .social-card:nth-child(3) { animation-delay: 0.4s; }
+        .social-card:nth-child(4) { animation-delay: 0.5s; }
+        .social-card:nth-child(5) { animation-delay: 0.6s; }
+        .social-card:nth-child(6) { animation-delay: 0.7s; }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px;
+            }
+            
+            .profile-img {
+                width: 120px;
+                height: 120px;
+                font-size: 3rem;
+            }
+            
+            .profile-header h1 {
+                font-size: 2rem;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .profile-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .contact-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .social-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="profile-header">
+                <div class="profile-img">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <h1>Technical Ivan Romero</h1>
+                <h2>Especialista Multidisciplinario</h2>
+                <p style="color: #ddd; margin-bottom: 15px;">Servicios de Hardware  Desarrollo Web  Desarrollo Personal</p>
+            </div>
+
+            <hr class="divider">
+
+            <div>
+                <h2 class="section-title">
+                    <i class="fas fa-address-card"></i> Información de Contacto
+                </h2>
+                
+                <div class="contact-grid">
+                    <a href="tel:+17868062197" class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-info">
+                            <h3>Llamadas</h3>
+                            <p>+1 (786) 806-2197</p>
+                        </div>
+                    </a>
+                    
+                    <a href="https://wa.me/17868062197" class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-info">
+                            <h3>WhatsApp</h3>
+                            <p>+1 (786) 806-2197</p>
+                        </div>
+                    </a>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-info">
+                            <h3>Correos Electrónicos</h3>
+                            <p>gofixcompany@gmail.com<br>i.romero007guru@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div>
+                <h2 class="section-title">
+                    <i class="fas fa-hashtag"></i> Redes Sociales
+                </h2>
+                
+                <div class="social-grid">
+                    <a href="https://m.facebook.com/ivan.romero.5661/" class="social-card">
+                        <div class="social-icon">
+                            <i class="fab fa-facebook"></i>
+                        </div>
+                        <h3>Facebook Personal</h3>
+                        <p>@ivan.romero.5661</p>
+                    </a>
+                    
+                    <a href="https://m.facebook.com/GoFixCompany/" class="social-card">
+                        <div class="social-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3>GoFix Company</h3>
+                        <p>Página Oficial</p>
+                    </a>
+                    
+                    <a href="https://www.instagram.com/ivanestoicodelsur/" class="social-card">
+                        <div class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <h3>Instagram Personal</h3>
+                        <p>@ivanestoicodelsur</p>
+                    </a>
+                    
+                    <a href="https://www.instagram.com/gofixcompanymiami/" class="social-card">
+                        <div class="social-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h3>GoFix Miami</h3>
+                        <p>Instagram Oficial</p>
+                    </a>
+                    
+                    <a href="https://youtube.com/@politicastconivanromero?si=du1Jn84fpDO3ID8J" class="social-card">
+                        <div class="social-icon">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        <h3>YouTube</h3>
+                        <p>Políticas con Ivan Romero</p>
+                    </a>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div>
+                <h2 class="section-title">
+                    <i class="fas fa-globe"></i> Mis Sitios Web
+                </h2>
+                
+                <div class="social-grid">
+                    <a href="https://gofixmiami.netlify.app/" class="social-card">
+                        <div class="social-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3>GoFix Miami</h3>
+                        <p>Servicios de Reparación</p>
+                    </a>
+                    
+                    <a href="https://mindsetbuilderdelsur.netlify.app" class="social-card">
+                        <div class="social-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Mindset Builder</h3>
+                        <p>Desarrollo Personal</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <h2 class="section-title">
+                    <i class="fas fa-qrcode"></i> Comparte mi Contacto
+                </h2>
+                
+                <div id="qrcode"></div>
+                <p class="qr-text">Escanea este código QR con tu cámara para acceder a toda mi información de contacto y servicios</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2023 Technical Ivan Romero. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrCode = new QRCode(document.getElementById("qrcode"), {
+                text: window.location.href,
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            
+            window.addEventListener('resize', function() {
+                const size = window.innerWidth < 480 ? 120 : 180;
+                document.getElementById("qrcode").innerHTML = '';
+                new QRCode(document.getElementById("qrcode"), {
+                    text: window.location.href,
+                    width: size,
+                    height: size,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            });
+            
+            const cards = document.querySelectorAll('.contact-card, .social-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
