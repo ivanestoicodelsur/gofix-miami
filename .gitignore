@@ -1,0 +1,25 @@
+# Node / build
+**/node_modules/
+**/dist/
+**/.cache/
+**/.vite/
+**/.turbo/
+
+# Logs
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Env / secrets (DO NOT COMMIT)
+**/.env
+**/.env.*
+
+# Google service account credentials
+backend/config/google-credentials.json
+backend/service-account.json
+backend/service-account*.json
+
+# OS
+.DS_Store
+Thumbs.db

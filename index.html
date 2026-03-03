@@ -17,6 +17,8 @@
 </head>
 <body class="bg-gray-50">
 
+    <script src="./config.js"></script>
+
     <!-- HEADER -->
     <header class="fixed w-full top-0 z-50 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -91,23 +93,23 @@
                     <form id="contactForm" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
-                            <input type="text" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Tu nombre">
+                            <input id="customerName" type="text" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Tu nombre">
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                                <input type="email" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="tu@email.com">
+                                <input id="customerEmail" type="email" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="tu@email.com">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                                <input type="tel" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="+1 (786) 000-0000">
+                                <input id="customerPhone" type="tel" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="+1 (786) 000-0000">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">¿Qué necesitas reparar?</label>
-                            <textarea required rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" placeholder="Ej: iPhone 14 Pro, pantalla rota, en Brickell..."></textarea>
+                            <textarea id="repairDescription" required rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" placeholder="Ej: Marca: iPhone | Modelo: iPhone 14 Pro | Problema: pantalla rota | Zona: Brickell..."></textarea>
                         </div>
 
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
@@ -115,11 +117,31 @@
                             <i class="fas fa-paper-plane"></i>
                         </button>
 
+                        <p id="contactMsg" class="text-sm text-center hidden"></p>
+
                         <p class="text-xs text-center text-gray-500">
                             Al enviar, aceptas nuestra política de privacidad. Te contactaremos por WhatsApp o llamada.
                         </p>
                     </form>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VERIFICAR ESTADO DE REPARACIÓN -->
+    <section id="estado" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto bg-gray-50 rounded-3xl shadow-lg p-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Verificar estado de reparación</h2>
+                <p class="text-gray-600 mb-6">Ingresa tu correo y número de solicitud.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input id="statusEmail" type="email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="tu@email.com" />
+                    <input id="statusId" type="number" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="# Solicitud" />
+                    <button id="statusBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition-all">Consultar</button>
+                </div>
+
+                <div id="statusMsg" class="mt-4 text-sm hidden"></div>
             </div>
         </div>
     </section>
@@ -447,6 +469,9 @@
 
     <!-- JavaScript para el cotizador -->
     <script>
+        // API base (loaded from config.js). Fallback to localhost if missing.
+        const API_BASE = (typeof API_URL === 'string' && API_URL) ? API_URL : 'http://localhost:4000/api';
+
         // Base de datos de servicios
         const servicesDB = {
             'iPhone': {
@@ -490,6 +515,40 @@
 
         let currentSelection = { brand: null, model: null };
 
+        function formatPrice(value) {
+            if (value === null || value === undefined) return '—';
+            if (typeof value === 'number') {
+                // Keep simple formatting; backend decides currency/scale.
+                return `$${value}`;
+            }
+            return String(value);
+        }
+
+        async function loadServicePricesFromBackend() {
+            try {
+                const res = await fetch(`${API_BASE}/public/services`, { method: 'GET' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const list = await res.json();
+                if (!Array.isArray(list)) return;
+
+                // Map by title (e.g., Pantalla, Batería, Puerto de Carga)
+                const priceMap = new Map();
+                for (const s of list) {
+                    if (s?.title && s?.price !== undefined) priceMap.set(String(s.title), s.price);
+                }
+
+                // Override local prices with backend prices when available
+                for (const brand of Object.keys(servicesDB)) {
+                    const svc = servicesDB[brand]?.services || {};
+                    for (const name of Object.keys(svc)) {
+                        if (priceMap.has(name)) svc[name].price = priceMap.get(name);
+                    }
+                }
+            } catch {
+                // Fallback: keep local prices
+            }
+        }
+
         function selectBrand(brand) {
             currentSelection.brand = brand;
             document.getElementById('selectedBrand').textContent = brand;
@@ -516,5 +575,161 @@
             
             // Generar grid de servicios
             const grid = document.getElementById('servicesGrid');
-            grid.innerHTML = Object.entries(services).map(([service, data]) => `
-                <button onclick="showResult('${service}', ${typeof data.price === 'number' ? data.price : 0
+            grid.innerHTML = Object.entries(services).map(([service, data]) => {
+                const numericPrice = (typeof data.price === 'number') ? data.price : 0;
+                return `
+                    <button onclick="showResult('${service}', ${numericPrice})" class="p-4 rounded-xl border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all text-left">
+                        <span class="font-semibold text-gray-800 block">${service}</span>
+                        <span class="text-sm text-gray-500">${formatPrice(data.price)} ${data.quality || ''}</span>
+                    </button>
+                `;
+            }).join('');
+
+            // Mostrar paso 3
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+        }
+
+        function showResult(service, price) {
+            currentSelection.service = service;
+            currentSelection.price = price;
+
+            // Pintar resumen
+            const device = `${currentSelection.brand || '-'} ${currentSelection.model || ''}`.trim();
+            const serviceText = service || '-';
+            const priceText = formatPrice(price);
+            const resDevice = document.getElementById('resDevice');
+            const resService = document.getElementById('resService');
+            const resPrice = document.getElementById('resPrice');
+            if (resDevice) resDevice.textContent = device;
+            if (resService) resService.textContent = serviceText;
+            if (resPrice) resPrice.textContent = priceText;
+
+            // WhatsApp link
+            const waLink = document.getElementById('waLink');
+            if (waLink) {
+                const msg = `Hola! Quiero cotizar: ${device} - ${serviceText}. Precio: ${priceText}`;
+                waLink.href = `https://wa.me/17868062197?text=${encodeURIComponent(msg)}`;
+            }
+            
+            // Mostrar resultado
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.remove('hidden');
+        }
+
+        function goBack(step) {
+            currentSelection = { brand: null, model: null };
+            document.getElementById('selectedBrand').textContent = '';
+            document.getElementById('modelsGrid').innerHTML = '';
+            document.getElementById('servicesGrid').innerHTML = '';
+            document.getElementById('step' + step).classList.add('hidden');
+            document.getElementById('step' + (step + 1)).classList.remove('hidden');
+        }
+
+        function resetQuote() {
+            currentSelection = { brand: null, model: null };
+            document.getElementById('selectedBrand').textContent = '';
+            document.getElementById('modelsGrid').innerHTML = '';
+            document.getElementById('servicesGrid').innerHTML = '';
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('step2').classList.add('hidden');
+        }
+
+        // Contact form -> create repair request
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadServicePricesFromBackend();
+
+            const form = document.getElementById('contactForm');
+            const msg = document.getElementById('contactMsg');
+
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (msg) {
+                        msg.classList.remove('hidden');
+                        msg.className = 'text-sm text-center';
+                        msg.textContent = 'Enviando...';
+                    }
+
+                    const customerName = document.getElementById('customerName')?.value || '';
+                    const customerEmail = document.getElementById('customerEmail')?.value || '';
+                    const customerPhone = document.getElementById('customerPhone')?.value || '';
+                    const description = document.getElementById('repairDescription')?.value || '';
+
+                    const payload = {
+                        customerName,
+                        customerEmail,
+                        customerPhone,
+                        deviceBrand: currentSelection.brand,
+                        deviceModel: currentSelection.model,
+                        serviceType: currentSelection.service,
+                        description,
+                        price: (typeof currentSelection.price === 'number') ? currentSelection.price : null,
+                    };
+
+                    try {
+                        const res = await fetch(`${API_BASE}/repair-requests`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        const data = await res.json().catch(() => null);
+                        if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+
+                        if (msg) {
+                            msg.className = 'text-sm text-center text-green-600';
+                            msg.textContent = `Solicitud enviada. Tu número es #${data?.id}. Estado: ${data?.status}.`;
+                        }
+
+                        // Prefill status checker
+                        const statusEmail = document.getElementById('statusEmail');
+                        const statusId = document.getElementById('statusId');
+                        if (statusEmail) statusEmail.value = customerEmail;
+                        if (statusId) statusId.value = String(data?.id || '');
+                        form.reset();
+                    } catch (err) {
+                        if (msg) {
+                            msg.className = 'text-sm text-center text-red-600';
+                            msg.textContent = `No se pudo enviar. ${err?.message || ''}`.trim();
+                        }
+                    }
+                });
+            }
+
+            // Status checker
+            const statusBtn = document.getElementById('statusBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            if (statusBtn) {
+                statusBtn.addEventListener('click', async () => {
+                    const email = document.getElementById('statusEmail')?.value || '';
+                    const id = document.getElementById('statusId')?.value || '';
+
+                    if (statusMsg) {
+                        statusMsg.classList.remove('hidden');
+                        statusMsg.className = 'mt-4 text-sm';
+                        statusMsg.textContent = 'Consultando...';
+                    }
+
+                    try {
+                        const params = new URLSearchParams({ email, id });
+                        const res = await fetch(`${API_BASE}/repair-requests/status?${params.toString()}`);
+                        const data = await res.json().catch(() => null);
+                        if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+
+                        if (statusMsg) {
+                            statusMsg.className = 'mt-4 text-sm text-slate-900';
+                            statusMsg.textContent = `Estado actual: ${data.status} (Actualizado: ${new Date(data.updatedAt).toLocaleString()})`;
+                        }
+                    } catch (err) {
+                        if (statusMsg) {
+                            statusMsg.className = 'mt-4 text-sm text-red-600';
+                            statusMsg.textContent = `No se pudo consultar. ${err?.message || ''}`.trim();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TECHNICIAN
+  VIEWER
+}
+
+enum RepairRequestStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(VIEWER)
+  createdAt DateTime @default(now())
+
+  refreshTokens RefreshToken[]
+  assignedRequests RepairRequest[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  jti       String   @unique
+  tokenHash String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+  replacedByTokenHash String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+
+model Inventory {
+  id          Int      @id @default(autoincrement())
+  ownerId     String   @default("system")
+  sku         String
+  title       String
+  description String?
+  quantity    Int      @default(0)
+  price       Float? 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([ownerId, sku])
+  @@index([ownerId])
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  ownerId     String   @default("system")
+  code        String?
+  title       String
+  description String?
+  price       Float? 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([ownerId, code])
+  @@index([ownerId])
+}
+
+model RepairRequest {
+  id            Int                 @id @default(autoincrement())
+  customerName  String
+  customerEmail String
+  customerPhone String
+
+  deviceBrand   String?
+  deviceModel   String?
+  serviceType   String?
+  description   String
+
+  status        RepairRequestStatus @default(PENDING)
+  price         Float?
+
+  technicianId  Int?
+  technician    User?               @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([customerEmail])
+  @@index([status])
+  @@index([technicianId])
+}

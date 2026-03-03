@@ -1,0 +1,86 @@
+# GoFix Backend – REST Client collection (VS Code)
+#
+# Requisitos:
+# - Backend corriendo en http://localhost:4000
+# - Usuarios seed:
+#   - admin@gofix.com / admin123
+#
+# Variables (pega valores aquí cuando corresponda)
+@baseUrl = http://localhost:4000
+@token = PASTE_ACCESS_TOKEN_HERE
+@adminToken = PASTE_ADMIN_ACCESS_TOKEN_HERE
+@itemId = PASTE_INVENTORY_ID_HERE
+
+### Health check
+GET {{baseUrl}}/health
+
+### Login - ADMIN (copia accessToken del response y pégalo en @token / @adminToken arriba)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@gofix.com",
+  "password": "admin123"
+}
+
+### Crear item de inventario (requiere ADMIN o TECHNICIAN)
+POST {{baseUrl}}/api/inventory
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "sku": "TEST001",
+  "title": "Item de prueba",
+  "description": "Creado desde requests.http",
+  "quantity": 10,
+  "price": 99.99
+}
+
+### Listar inventario del usuario (ADMIN ve todo; TECHNICIAN/VIEWER solo lo suyo)
+GET {{baseUrl}}/api/inventory
+Authorization: Bearer {{token}}
+
+### Actualizar item (IMPORTANTE: este backend valida sku+title en PUT)
+# 1) Copia el id del item creado y pégalo en @itemId arriba.
+# 2) Mantén sku y title (requeridos) y cambia quantity/price.
+PUT {{baseUrl}}/api/inventory/{{itemId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "sku": "TEST001",
+  "title": "Item de prueba",
+  "quantity": 15,
+  "price": 89.99
+}
+
+### Eliminar item
+DELETE {{baseUrl}}/api/inventory/{{itemId}}
+Authorization: Bearer {{token}}
+
+### Crear servicio (requiere ADMIN o TECHNICIAN)
+POST {{baseUrl}}/api/services
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Reparación pantalla",
+  "description": "Cambio de pantalla LCD",
+  "price": 150.0
+}
+
+### Listar servicios
+GET {{baseUrl}}/api/services
+Authorization: Bearer {{token}}
+
+### Ver logs de auditoría (solo ADMIN)
+GET {{baseUrl}}/api/audit-logs?page=1&limit=10
+Authorization: Bearer {{adminToken}}
+
+# --- INSTRUCCIONES ---
+# 1) Instala la extensión: REST Client (Huachao Mao)
+# 2) Abre este archivo y haz click en "Send Request" sobre cada bloque.
+# 3) Después del login, copia el accessToken del response JSON y pégalo en:
+#    - @token (para las llamadas normales)
+#    - @adminToken (para /api/audit-logs)
+# 4) Para update/delete de inventario, copia el id del item creado y pégalo en @itemId.

@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: gofix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gofix
+    ports:
+      - "5432:5432"
+    volumes:
+      - gofix_postgres_data:/var/lib/postgresql/data
+    networks:
+      - gofix_net
+
+  mongo:
+    image: mongo:7
+    container_name: gofix-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - gofix_mongo_data:/data/db
+    networks:
+      - gofix_net
+
+  # Optional (future): needed for Socket.IO adapter and distributed rate limits
+  redis:
+    image: redis:7-alpine
+    container_name: gofix-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - gofix_redis_data:/data
+    networks:
+      - gofix_net
+
+volumes:
+  gofix_postgres_data:
+  gofix_mongo_data:
+  gofix_redis_data:
+
+networks:
+  gofix_net:
+    driver: bridge

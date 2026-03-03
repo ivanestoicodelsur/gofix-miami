@@ -1,0 +1,12 @@
+:root{--bg:#f8fafc;--accent:#0ea5e9}
+body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);margin:0}
+.admin-header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#0b63a3;color:#fff}
+.admin-header nav a{color:#fff;margin-left:12px;text-decoration:none}
+.admin-main{padding:20px}
+.login{max-width:400px;margin:40px auto;padding:20px;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.08)}
+.login-form input{display:block;width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #e6e9ee}
+.login-form button{background:var(--accent);color:#fff;padding:10px 16px;border-radius:8px;border:none}
+.services-form input{padding:8px;margin-right:8px;border:1px solid #ddd;border-radius:6px}
+.inventory-table{width:100%;border-collapse:collapse}
+.inventory-table th, .inventory-table td{padding:8px;border-bottom:1px solid #eee}
+

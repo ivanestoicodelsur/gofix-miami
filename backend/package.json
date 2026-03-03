@@ -1,0 +1,49 @@
+{
+  "name": "gofix-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "stop": "npx kill-port 4000 || taskkill /F /IM node.exe",
+    "restart": "npm run stop && npm run dev",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "start:prod": "node dist/server.js",
+    "db:up": "docker compose -f docker-compose.yml up -d",
+    "db:down": "docker compose -f docker-compose.yml down",
+    "setup": "npm run db:up && npx prisma migrate deploy && npx prisma generate && npm run seed",
+    "verify": "node scripts/verify-config.js",
+    "prisma": "prisma",
+    "postinstall": "npx prisma generate",
+    "seed": "ts-node src/seed.ts"
+  },
+  "prisma": {
+    "seed": "ts-node src/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "csv-stringify": "^6.6.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "googleapis": "^121.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.5.0",
+    "socket.io": "^4.8.0",
+    "helmet": "^7.0.0",
+    "express-rate-limit": "^6.8.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/node": "^20.4.2",
+    "prisma": "^5.10.0",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.0"
+  }
+}
