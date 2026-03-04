@@ -4,14 +4,14 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "4000:4000"
     depends_on:
       - postgres
       - mongo
       - redis
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=4000
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/gofix
       - MONGO_URL=mongodb://mongo:27017/gofix
       - REDIS_URL=redis://redis:6379
